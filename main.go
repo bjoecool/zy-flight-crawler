@@ -2,43 +2,25 @@ package main
 
 import (
 	"github.com/zhangyuyu/zy-trip-spider/service"
-	"github.com/zhangyuyu/zy-trip-spider/models"
+	"fmt"
+	"time"
 )
 
 func main() {
-	service.Crawl("http://golang.org/", 4, fetcher)
-}
+	fmt.Printf("Today: %v\n", time.Now().Format(time.RFC822))
 
-// fetcher is a populated fakeFetcher.
-var fetcher = &service.FakeFetcher{
-	"http://golang.org/": &models.FakeResult{
-		"The Go Programming Language",
-		[]string{
-			"http://golang.org/pkg/",
-			"http://golang.org/cmd/",
-		},
-	},
-	"http://golang.org/pkg/": &models.FakeResult{
-		"Packages",
-		[]string{
-			"http://golang.org/",
-			"http://golang.org/cmd/",
-			"http://golang.org/pkg/fmt/",
-			"http://golang.org/pkg/os/",
-		},
-	},
-	"http://golang.org/pkg/fmt/": &models.FakeResult{
-		"Package fmt",
-		[]string{
-			"http://golang.org/",
-			"http://golang.org/pkg/",
-		},
-	},
-	"http://golang.org/pkg/os/": &models.FakeResult{
-		"Package os",
-		[]string{
-			"http://golang.org/",
-			"http://golang.org/pkg/",
-		},
-	},
+	// 瑞安航空公司 Ryanair
+	dateOut := "2018-05-14"
+	flexDaysOut := 6
+	url := fmt.Sprintf("https://desktopapps.ryanair.com/v4/zh-cn/availability"+
+		"?Origin=%s"+
+		"&Destination=%s"+
+		"&DateOut=%s"+
+		"&FlexDaysOut=%d"+
+		"&INF=%d&ADT=%d&CHD=%d&TEEN=%d"+
+		"&IncludeConnectingFlights=%t&RoundTrip=%t"+
+		"&ToUs=AGREED&exists=false&promoCode=",
+		"HAM", "BCN", dateOut, flexDaysOut, 0, 2, 0, 0, true, false)
+
+	service.Crawl(url, flexDaysOut, &service.TripFetcher{})
 }

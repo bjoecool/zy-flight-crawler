@@ -1,17 +1,17 @@
 package service
 
 import (
-	"github.com/zhangyuyu/zy-trip-spider/models"
+	"net/http"
 )
 
 type Fetcher interface {
-	Fetch(url string) (*models.FakeResult, bool)
+	Fetch(url string) (*http.Response, bool)
 }
 
-// fakeFetcher is Fetcher that returns canned results.
-type FakeFetcher map[string]*models.FakeResult
+type TripFetcher struct {
+}
 
-func (f *FakeFetcher) Fetch(url string) (*models.FakeResult, bool) {
-	result, ok := (*f)[url]
-	return result, ok
+func (fetcher *TripFetcher) Fetch(url string) (*http.Response, bool) {
+	result, err := http.Get(url)
+	return result, err != nil
 }

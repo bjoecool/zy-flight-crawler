@@ -3,45 +3,62 @@ package service
 import (
 	"fmt"
 	"github.com/zhangyuyu/zy-trip-spider/models"
+	"net/http"
+	_ "io/ioutil"
+	_ "encoding/json"
+	"io/ioutil"
+	"encoding/json"
 )
 
-func Crawl(url string, depth int, fetcher Fetcher) {
-	results := make(chan *models.Result)
-	fetched := make(map[string]bool)
-	fetch := func(url string, depth int) {
-		result, ok := fetcher.Fetch(url)
-		if ok {
-			results <- &models.Result{url, result.Body, result.Urls, nil, depth}
-		} else {
-			results <- &models.Result{url, "", nil, fmt.Errorf("Deepth: %d, Not found: %s", depth, url), depth}
+func Crawl(url string, days int, fetcher Fetcher) {
+	response, _ := fetcher.Fetch(url)
+
+	tripResponse := Analysis(response)
+	tripResult := Transfer(tripResponse, days)
+
+	//bytes, _ := json.Marshal(tripResult)
+	//fmt.Printf(string(bytes))
+	fmt.Printf("Origin: %v(%v)\n"+"Destination: %v(%v)\n\n",
+		tripResult.Origin, tripResult.OriginName, tripResult.Destination, tripResult.DestinationName)
+
+	details := tripResult.TripDetails
+	for i := 0; i < days; i++ {
+		fmt.Println(details[i])
+	}
+}
+
+func Transfer(tripResponse models.TripResponse, days int) models.TripResult {
+	tripDetails := make([]models.TripDetail, days)
+	unit := tripResponse.Currency
+
+	dates := tripResponse.Trips[0].Dates
+	for i := 0; i < days; i++ {
+		day := dates[i]
+		tripDetails[i] = models.TripDetail{
+			Price:        day.Flights[0].RegularFare.Fares[0].Amount,
+			Unit:         unit,
+			FlightNumber: day.Flights[0].FlightNumber,
+			DateDetail: models.DateDetail{
+				Start: day.Flights[0].TimeUTC[0],
+				End:   day.Flights[0].TimeUTC[1],
+			},
 		}
 	}
 
-	go fetch(url, depth)
-	fetched[url] = true
-
-	for fetching := 1; fetching > 0; fetching-- {
-		res := <-results
-
-		if res.Err != nil {
-			fmt.Println(res.Err)
-			continue
-		}
-
-		fmt.Printf("Deepth: %d, Found: %s %q\n", res.Depth, res.Url, res.Body)
-
-		// follow links if depth has not been exhausted
-		if res.Depth > 0 {
-			for _, u := range res.Urls {
-				// don't attempt to re-fetch known url, decrement depth
-				if !fetched[u] {
-					fetching++
-					go fetch(u, res.Depth-1)
-					fetched[u] = true
-				}
-			}
-		}
+	tripResult := models.TripResult{
+		Origin:          tripResponse.Trips[0].Origin,
+		OriginName:      tripResponse.Trips[0].OriginName,
+		Destination:     tripResponse.Trips[0].Destination,
+		DestinationName: tripResponse.Trips[0].DestinationName,
+		TripDetails:     tripDetails,
 	}
 
-	close(results)
+	return tripResult
+}
+
+func Analysis(response *http.Response) models.TripResponse {
+	body, _ := ioutil.ReadAll(response.Body)
+	var tripResponse models.TripResponse
+	json.Unmarshal(body, &tripResponse)
+	return tripResponse
 }
