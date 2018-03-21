@@ -31,8 +31,8 @@ type RegularFare struct {
 type Fare struct {
 	Type string
 	Count int16
-	Amount float32
-	PublishedFare float32
+	Amount float64
+	PublishedFare float64
 	HasDiscount bool
 	HasPromoDiscount bool
 	DiscountInPercent int16

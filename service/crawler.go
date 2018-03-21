@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/zhangyuyu/zy-flight-crawler/models"
-	"net/http"
-	"io/ioutil"
 	"encoding/json"
+	"github.com/zhangyuyu/zy-flight-crawler/models"
+	"io/ioutil"
+	"net/http"
 )
 
 func Crawl(url string, fetcher Fetcher) models.TripResult {
@@ -30,10 +30,8 @@ func ToTripResult(tripResponse models.TripResponse) models.TripResult {
 			Price:        day.Flights[0].RegularFare.Fares[0].Amount,
 			Unit:         unit,
 			FlightNumber: day.Flights[0].FlightNumber,
-			DateDetail: models.DateDetail{
-				Start: day.Flights[0].TimeUTC[0],
-				End:   day.Flights[0].TimeUTC[1],
-			},
+			Start:        day.Flights[0].TimeUTC[0],
+			End:          day.Flights[0].TimeUTC[1],
 		}
 	}
 

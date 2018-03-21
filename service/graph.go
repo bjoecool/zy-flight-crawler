@@ -1,9 +1,13 @@
 package service
 
 import (
-	"github.com/zhangyuyu/zy-flight-crawler/models"
+	"bytes"
 	"fmt"
 	"github.com/bclicn/color"
+	"github.com/wcharczuk/go-chart"
+	"github.com/zhangyuyu/zy-flight-crawler/models"
+	"io/ioutil"
+	"time"
 )
 
 func DrawGraph(tripResult models.TripResult) {
@@ -12,7 +16,46 @@ func DrawGraph(tripResult models.TripResult) {
 		tripResult.Origin, tripResult.OriginName, tripResult.Destination, tripResult.DestinationName)
 
 	details := tripResult.TripDetails
-	for i := 0; i < len(details); i++ {
+	length := len(details)
+
+	prices := make([]float64, length)
+	dates := make([]time.Time, length)
+
+	for i := 0; i < length; i++ {
 		fmt.Println(details[i])
+		prices[i] = details[i].Price
+		dates[i] = details[i].Start
 	}
+
+	graph := chart.Chart{
+		Background: chart.Style{
+			Padding: chart.Box{
+				Top:   20,
+				Left:  20,
+				Right: 50,
+			},
+		},
+		YAxis: chart.YAxis{
+			Style: chart.Style{
+				Show: true,
+			},
+			Name: "Price",
+		},
+		XAxis: chart.XAxis{
+			Style: chart.Style{
+				Show: true,
+			},
+			Name: "Time",
+		},
+		Series: []chart.Series{
+			chart.TimeSeries{
+				YValues: prices,
+				XValues: dates,
+			},
+		},
+	}
+
+	buffer := bytes.NewBuffer([]byte{})
+	graph.Render(chart.PNG, buffer)
+	ioutil.WriteFile("chart.png", buffer.Bytes(), 0644)
 }
