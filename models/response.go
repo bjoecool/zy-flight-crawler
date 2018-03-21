@@ -22,6 +22,7 @@ type Flight struct {
 	RegularFare RegularFare
 	TimeUTC [] time.Time
 	FlightNumber string
+	FaresLeft int16
 }
 
 type RegularFare struct {

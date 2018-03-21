@@ -27,7 +27,7 @@ func DrawGraph(tripResult models.TripResult) {
 	for i := 0; i < length; i++ {
 		fmt.Println(details[i])
 		prices[i] = details[i].Price
-		dates[i] = details[i].Start
+		dates[i] = details[i].DateOut
 	}
 
 	graph := chart.Chart{

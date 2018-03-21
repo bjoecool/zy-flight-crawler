@@ -5,6 +5,7 @@ import (
 	"github.com/zhangyuyu/zy-flight-crawler/models"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 func Crawl(url string, fetcher Fetcher) models.TripResult {
@@ -26,12 +27,20 @@ func ToTripResult(tripResponse models.TripResponse) models.TripResult {
 	tripDetails := make([]models.TripDetail, days)
 	for i := 0; i < days; i++ {
 		day := dates[i]
-		tripDetails[i] = models.TripDetail{
-			Price:        day.Flights[0].RegularFare.Fares[0].Amount,
-			Unit:         unit,
-			FlightNumber: day.Flights[0].FlightNumber,
-			Start:        day.Flights[0].TimeUTC[0],
-			End:          day.Flights[0].TimeUTC[1],
+		dateOut, _ := time.Parse("2006-01-02T15:04:05.000", day.DateOut)
+		if len(day.Flights) > 0 && day.Flights[0].FaresLeft != 0 {
+			tripDetails[i] = models.TripDetail{
+				DateOut:      dateOut,
+				Price:        day.Flights[0].RegularFare.Fares[0].Amount,
+				Unit:         unit,
+				FlightNumber: day.Flights[0].FlightNumber,
+				Start:        day.Flights[0].TimeUTC[0],
+				End:          day.Flights[0].TimeUTC[1],
+			}
+		} else {
+			tripDetails[i] = models.TripDetail{
+				DateOut: dateOut,
+			}
 		}
 	}
 
