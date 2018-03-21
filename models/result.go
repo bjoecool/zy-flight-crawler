@@ -20,7 +20,6 @@ type TripDetail struct {
 	Duration     float64
 }
 
-
 func (trip TripDetail) String() string {
 	trip.Duration = trip.End.Sub(trip.Start).Hours()
 	return fmt.Sprintf(color.Blue("Time") + ": %v - %v\n"+
