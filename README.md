@@ -5,6 +5,7 @@ Golang Flight Crawler
 * Golang
 * Crawler
 * Ryanair
+* Go-chart
 
 ## 二、运行
 直接运行main.go即可
@@ -49,7 +50,7 @@ FlightNumber: FR 129
 ## 三、TODO
 ### 当前：
 * 从HAM到BCN的某一周票价情况
-* 输出打印在了命令行
+* 输出打印在了命令行，生成了一个简单的图标
 * 数据是运行程序当天
 
 ### 期望：
