@@ -11,9 +11,12 @@ import (
 )
 
 func DrawGraph(tripResult models.TripResult) {
-	fmt.Printf(color.Green("Origin") + " : %v(%v)\n"+
-		color.Green("Destination")+ " : %v(%v)\n\n",
-		tripResult.Origin, tripResult.OriginName, tripResult.Destination, tripResult.DestinationName)
+	fmt.Printf(color.Green("Today") + ": %v\n"+
+		color.Green("Origin")+ " : %v\n"+
+		color.Green("Destination")+ " : %v\n\n",
+		time.Now().Format("2006-01-02 Mon"),
+		tripResult.Origin,
+		tripResult.Destination)
 
 	details := tripResult.TripDetails
 	length := len(details)
