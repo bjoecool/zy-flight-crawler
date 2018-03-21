@@ -1,35 +1,29 @@
 package service
 
 import (
-	"fmt"
 	"github.com/zhangyuyu/zy-flight-crawler/models"
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
 )
 
-func Crawl(url string, days int, fetcher Fetcher) {
-	response, _ := fetcher.Fetch(url)
+func Crawl(url string, fetcher Fetcher) models.TripResult {
+	httpResponse, _ := fetcher.Fetch(url)
 
-	tripResponse := Analysis(response)
-	tripResult := Transfer(tripResponse, days)
-
+	tripResponse := ToTripResponse(httpResponse)
+	tripResult := ToTripResult(tripResponse)
 	//bytes, _ := json.Marshal(tripResult)
 	//fmt.Printf(string(bytes))
-	fmt.Printf("Origin: %v(%v)\n"+"Destination: %v(%v)\n\n",
-		tripResult.Origin, tripResult.OriginName, tripResult.Destination, tripResult.DestinationName)
 
-	details := tripResult.TripDetails
-	for i := 0; i < days; i++ {
-		fmt.Println(details[i])
-	}
+	return tripResult
 }
 
-func Transfer(tripResponse models.TripResponse, days int) models.TripResult {
-	tripDetails := make([]models.TripDetail, days)
+func ToTripResult(tripResponse models.TripResponse) models.TripResult {
 	unit := tripResponse.Currency
-
 	dates := tripResponse.Trips[0].Dates
+	days := len(dates)
+
+	tripDetails := make([]models.TripDetail, days)
 	for i := 0; i < days; i++ {
 		day := dates[i]
 		tripDetails[i] = models.TripDetail{
@@ -54,7 +48,7 @@ func Transfer(tripResponse models.TripResponse, days int) models.TripResult {
 	return tripResult
 }
 
-func Analysis(response *http.Response) models.TripResponse {
+func ToTripResponse(response *http.Response) models.TripResponse {
 	body, _ := ioutil.ReadAll(response.Body)
 	var tripResponse models.TripResponse
 	json.Unmarshal(body, &tripResponse)

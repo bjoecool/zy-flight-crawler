@@ -2,12 +2,13 @@ package main
 
 import (
 	"github.com/zhangyuyu/zy-flight-crawler/service"
+	"github.com/bclicn/color"
 	"fmt"
 	"time"
 )
 
 func main() {
-	fmt.Printf("Today: %v\n", time.Now().Format(time.RFC1123))
+	fmt.Printf(color.Green("Today")+": %v\n", time.Now().Format(time.RFC1123))
 
 	// 瑞安航空公司 Ryanair
 	dateOut := "2018-05-14"
@@ -22,5 +23,7 @@ func main() {
 		"&ToUs=AGREED&exists=false&promoCode=",
 		"HAM", "BCN", dateOut, flexDaysOut, 0, 2, 0, 0, true, false)
 
-	service.Crawl(url, flexDaysOut, &service.TripFetcher{})
+	result := service.Crawl(url, &service.TripFetcher{})
+
+	service.DrawGraph(result)
 }

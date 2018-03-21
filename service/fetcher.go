@@ -12,6 +12,6 @@ type TripFetcher struct {
 }
 
 func (fetcher *TripFetcher) Fetch(url string) (*http.Response, bool) {
-	result, err := http.Get(url)
-	return result, err != nil
+	httpResponse, err := http.Get(url)
+	return httpResponse, err != nil
 }

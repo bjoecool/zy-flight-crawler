@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 	"fmt"
+	"github.com/bclicn/color"
 )
 
 type TripResult struct {
@@ -25,10 +26,10 @@ type DateDetail struct {
 
 func (trip TripDetail) String() string {
 	trip.Duration = trip.DateDetail.End.Sub(trip.DateDetail.Start)
-	return fmt.Sprintf("Time: %v - %v\n"+
-		"Price: %v %v\n"+
-		"Duration: %v\n"+
-		"FlightNumber: %v\n",
+	return fmt.Sprintf(color.Blue("Time") + ": %v - %v\n"+
+		color.Blue("Price")+ ": %v %v\n"+
+		color.Blue("Duration")+ ": %v\n"+
+		color.Blue("FlightNumber")+ ": %v\n",
 		trip.DateDetail.Start, trip.DateDetail.End,
 		trip.Price, trip.Unit,
 		trip.Duration,
