@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/zhangyuyu/zy-trip-spider/service"
+	"github.com/zhangyuyu/zy-flight-crawler/service"
 	"fmt"
 	"time"
 )
 
 func main() {
-	fmt.Printf("Today: %v\n", time.Now().Format(time.RFC822))
+	fmt.Printf("Today: %v\n", time.Now().Format(time.RFC1123))
 
 	// 瑞安航空公司 Ryanair
 	dateOut := "2018-05-14"

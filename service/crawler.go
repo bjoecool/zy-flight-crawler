@@ -2,10 +2,8 @@ package service
 
 import (
 	"fmt"
-	"github.com/zhangyuyu/zy-trip-spider/models"
+	"github.com/zhangyuyu/zy-flight-crawler/models"
 	"net/http"
-	_ "io/ioutil"
-	_ "encoding/json"
 	"io/ioutil"
 	"encoding/json"
 )
